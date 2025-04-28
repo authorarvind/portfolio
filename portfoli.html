@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arpana Kumari | BCA Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .marquee-custom {
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+        }
+        .card-hover {
+            transition: transform 0.3s;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Animated Header -->
+    <header class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-6">
+        <h1 id="nameAnimation" class="text-4xl font-bold text-center mb-4">Arpana Kumari</h1>
+        <div class="marquee-custom py-2 text-center font-semibold">
+            🎓 BCA 6th Sem | AKU Patna | CGPA 8.50 | ACITE New Delhi 🌟
+        </div>
+    </header>
+
+    <!-- Education Section -->
+    <section class="py-12 px-4 bg-gray-50 scroll-animate">
+        <h2 class="text-3xl text-center mb-8">Education</h2>
+        <div class="max-w-4xl mx-auto grid gap-6 md:grid-cols-2">
+            <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl text-purple-600 font-bold">AKU Patna</h3>
+                <p class="mt-2">BCA 6th Semester</p>
+                <p class="text-sm text-gray-600 mt-2">CGPA: 8.50</p>
+            </div>
+            <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl text-blue-600 font-bold">ACITE New Delhi</h3>
+                <p class="mt-2">Affiliation Details</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reference Section -->
+    <section class="py-12 px-4 bg-white scroll-animate">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl mb-6">Reference</h2>
+            <div class="bg-gray-100 p-6 rounded-lg hover:shadow-md transition-shadow">
+                <p class="text-lg font-semibold">Dr. Arvind Kumar</p>
+                <p class="text-gray-600 mt-2">Principal</p>
+                <a href="mailto:prinmcipkl@uipe.org.in" 
+                   class="text-blue-500 hover:underline block mt-2"
+                   onclick="protectEmail(event)">
+                    Contact Principal
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section class="py-12 px-4 bg-gray-100 scroll-animate">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl text-center mb-8">Contact Me</h2>
+            <form class="space-y-4">
+                <input type="text" 
+                       placeholder="Your Name" 
+                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                <input type="email" 
+                       placeholder="Your Email" 
+                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                <textarea 
+                    class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                    rows="4"
+                    placeholder="Your Message"></textarea>
+                <button class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors w-full">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Email Protection
+        function protectEmail(event) {
+            event.preventDefault();
+            const email = 'prinmcipkl' + '@' + 'uipe.org.in';
+            window.location.href = 'mailto:' + email;
+        }
+
+        // Initial Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '#nameAnimation',
+                opacity: [0, 1],
+                translateY: [-50, 0],
+                duration: 1000,
+                easing: 'easeOutExpo'
+            });
+
+            anime({
+                targets: '.card-hover',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                delay: anime.stagger(100),
+                easing: 'easeOutExpo'
+            });
+        });
+
+        // Scroll Animations
+        window.addEventListener('scroll', () => {
+            const elements = document.querySelectorAll('.scroll-animate');
+            elements.forEach(el => {
+                const position = el.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    el.classList.add('animate-fade-in-up');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
