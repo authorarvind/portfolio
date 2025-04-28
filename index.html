@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,12 +62,29 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Dark Mode Styles */
+        .dark .bg-white { background-color: #1a202c; }
+        .dark .bg-gray-50 { background-color: #2d3748; }
+        .dark .bg-gray-100 { background-color: #4a5568; }
+        .dark .text-white { color: #e2e8f0; }
+        .dark .text-gray-600 { color: #a0aec0; }
+        .dark .text-purple-600 { color: #d6b4e6; }
+        .dark .text-blue-600 { color: #63b3ed; }
+        .dark .text-blue-500 { color: #4299e1; }
+        .dark .bg-gradient-to-r { background: linear-gradient(90deg, #4a5568, #2d3748); }
+        .dark .shadow-lg { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); }
+        .dark .hover:shadow-md { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
     </style>
 </head>
-<body class="bg-white">
-    <!-- Animated Header -->
+<body class="bg-white text-gray-900 transition-colors duration-300">
+    <!-- Animated Header with Toggle Mode -->
     <header class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-6">
-        <h1 id="nameAnimation" class="text-4xl font-bold text-center mb-4">Arpana Kumari</h1>
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 id="nameAnimation" class="text-4xl font-bold mb-4">Arpana Kumari</h1>
+            <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                Toggle Dark Mode
+            </button>
+        </div>
         <div class="marquee-custom py-2 text-center font-semibold">
             🎓 BCA 6th Sem | AKU Patna | CGPA 8.50 | ACITE New Delhi 🌟
         </div>
@@ -41,7 +97,7 @@
             <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
                 <h3 class="text-xl text-purple-600 font-bold">AKU Patna</h3>
                 <p class="mt-2">BCA 6th Semester</p>
-                <p class="text-sm text-gray-600 mt-2">CGPA: 8.00</p>
+                <p class="text-sm text-gray-600 mt-2">CGPA: 8.50</p>
             </div>
             <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
                 <h3 class="text-xl text-blue-600 font-bold">ACITE New Delhi</h3>
@@ -55,11 +111,9 @@
         <div class="max-w-2xl mx-auto text-center">
             <h2 class="text-3xl mb-6">Reference</h2>
             <div class="bg-gray-100 p-6 rounded-lg hover:shadow-md transition-shadow">
-                <p class="text-lg font-semibold">Mr. Arvind Kumar</p>
+                <p class="text-lg font-semibold">Dr. Arvind Kumar</p>
                 <p class="text-gray-600 mt-2">Principal</p>
-                <a href="mailto:prinmcipkl@uipe.org.in" 
-                   class="text-blue-500 hover:underline block mt-2"
-                   onclick="protectEmail(event)">
+                <a href="/cdn-cgi/l/email-protection#2313110a0d0e000a13080f23160a13064d0c11044d0a0d" class="text-blue-500 hover:underline block mt-2" onclick="protectEmail(event)">
                     Contact Principal
                 </a>
             </div>
@@ -73,12 +127,12 @@
             <form class="space-y-4">
                 <input type="text" 
                        placeholder="Your Name" 
-                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                 <input type="email" 
                        placeholder="Your Email" 
-                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                 <textarea 
-                    class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                    class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                     rows="4"
                     placeholder="Your Message"></textarea>
                 <button class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors w-full">
@@ -88,6 +142,19 @@
         </div>
     </section>
 
+    <!-- WhatsApp Direct Chat Section -->
+    <section class="py-12 px-4 bg-white scroll-animate">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl mb-6">Need Support? Chat with Me on WhatsApp!</h2>
+            <a href="https://wa.me/+916201259584?text=Hello%20Arpana!%20%F0%9F%91%8B%20I%20need%20support%20and%20help.%20Can%20you%20assist%20me?%20%F0%9F%98%8A" 
+               class="inline-flex items-center bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors">
+                <span class="mr-2">📞 Chat Now</span>
+                <span>WhatsApp Support</span>
+            </a>
+        </div>
+    </section>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
         // Email Protection
         function protectEmail(event) {
@@ -125,6 +192,25 @@
                 }
             });
         });
+
+        // Toggle Dark Mode
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            body.classList.add('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            if (body.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'937532213cc8b076',t:'MTc0NTgyOTAwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
